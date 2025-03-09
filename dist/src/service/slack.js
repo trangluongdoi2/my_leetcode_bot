@@ -38,9 +38,13 @@ class SlackService {
         });
     }
     _formatProblemLink(link) {
-        const arr = link.split(',');
-        const baseUrl = arr[0].replace(/'/g, '');
-        return baseUrl + arr[1];
+        // const arr = link.split(',');
+        // console.log(arr,  '==> arr..')
+        // const baseUrl = arr[0].replace(/'/g, '');
+        // console.log(baseUrl, arr[1], '==> baseUrl, arr[1]..');
+        // return baseUrl + arr[1];
+        // With ec2 the result link is fully, so not nessccary to split
+        return link;
     }
     _formatProblemMessage(problem) {
         // Phase 1
