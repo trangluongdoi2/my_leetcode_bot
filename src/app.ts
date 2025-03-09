@@ -16,11 +16,11 @@ class App {
     if (problem) {
       const slack = new SlackService(configs.SLACK_BOT_TOKEN, configs.SLACK_CHANNEL);
       const result = await slack.postLeetcodeProblem(problem);
-      // if (result) {
-      //   console.log("Successfully posted to Slack");
-      // } else {
-      //   console.error("Failed to post to Slack");
-      // }
+      if (result) {
+        console.log("Successfully posted to Slack");
+      } else {
+        console.error("Failed to post to Slack");
+      }
     } else {
       console.error("Failed to fetch LeetCode problem");
     }

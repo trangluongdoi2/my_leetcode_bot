@@ -7,7 +7,7 @@
     "module": "commonjs", 
     "sourceMap": true,                           
     "baseUrl": ".",    
-    "rootDir": "src",    
+    "rootDir": ".",    
     "outDir": "dist",                                   /* Specify an output folder for all emitted files. */   
     "paths": {
       "@/*": ["src/*"]
@@ -19,6 +19,6 @@
     "noImplicitAny": true,                            /* Enable error reporting for expressions and declarations with an implied 'any' type. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
-  "include": ["src/**/*", "__tests__/*", "__tests__/unit/*", "__tests__/integration/*", "__tests__/ unit /*"],
+  "include": ["/**/*", "__tests__/*", "__tests__/unit/*", "__tests__/integration/*", "__tests__/ unit /*"],
   "exclude": ["node_modules", "dist", "coverage"]
 }
