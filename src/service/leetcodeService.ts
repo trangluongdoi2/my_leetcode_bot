@@ -1,22 +1,17 @@
+import axios from "axios";
 import * as cheerio from 'cheerio';
-import axios from 'axios';
+import configs from '../configs/env'
 
-export class LeetCodeCrawler {
-  private baseUrl: string
-  private apiUrl: string
-  private headers: Record<string, string>
-  constructor(baseUrl: string, apiUrl: string) {
-    this.baseUrl = baseUrl;
-    this.apiUrl = apiUrl;
-    this.headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-      'Content-Type': 'application/json',
-      'Referer': this.baseUrl
-    };
+export class LeetcodeService {
+  private baseUrl = configs.LEETCODE_URL;
+  private apiUrl = configs.LEETCODE_API_URL;
+  private headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Content-Type': 'application/json',
+    'Referer': this.baseUrl
   }
   async getDailyChallenge() {
     try {
-      // GraphQL query to get the daily coding challenge
       const query = `
         query questionOfToday {
           activeDailyCodingChallengeQuestion {
@@ -66,6 +61,7 @@ export class LeetCodeCrawler {
       return null;
     }
   }
+
   async getProblemDetails(titleSlug: any) {
     try {
       const query = `

@@ -1,6 +1,6 @@
 import { WebClient } from "@slack/web-api";
 
-export class SlackConnector {
+export class SlackService {
   private client: WebClient;
   private channel: string;
   constructor(token: string, channel: string) {
@@ -8,56 +8,14 @@ export class SlackConnector {
     this.channel = channel;
   }
 
-  async listAllChannels() {
-    try {
-      const publicResult = await this.client.conversations.list({
-        exclude_archived: true,
-        types: 'public_channel',
-        limit: 1000
-      });
-      
-      console.log('PUBLIC CHANNELS:');
-      console.log('================');
-      if (publicResult.channels && publicResult.channels.length > 0) {
-        publicResult.channels.forEach((channel: any) => {
-          console.log(`${channel.name.padEnd(30)} | ID: ${channel.id}`);
-        });
-      } else {
-        console.log('No public channels found or bot doesn\'t have access.');
-      }
-      
-      console.log('\n');
-      
-      // List private channels (if bot has access)
-      const privateResult = await this.client.conversations.list({
-        exclude_archived: true,
-        types: 'private_channel',
-        limit: 1000
-      });
-      
-      console.log('PRIVATE CHANNELS:');
-      console.log('=================');
-      if (privateResult.channels && privateResult.channels.length > 0) {
-        privateResult.channels.forEach((channel: any) => {
-          console.log(`${channel.name.padEnd(30)} | ID: ${channel.id}`);
-        });
-      } else {
-        console.log('No private channels found or bot doesn\'t have access.');
-      }
-      
-    } catch (error) {
-    }
-  }
-
   async postLeetcodeProblem(problem: any) {
-    const result = await this.listAllChannels();
-    console.log(result, '==> result..');
     try {
       if (!problem) {
         console.error("No problem data to post");
         return false;
       }
       const message = this._formatProblemMessage(problem);
+
       await this.client.chat.postMessage({
         channel: this.channel,
         text: "Today's LeetCode Challenge",
@@ -67,17 +25,26 @@ export class SlackConnector {
       console.log(`Message posted to ${this.channel}`);
       return true;
     } catch (error) {
-      console.error(error, '==> error..');
       return false;
     }
   }
 
+  _formatProblemLink(link: string) {
+    const arr = link.split(',');
+    const baseUrl = arr[0].replace(/'/g, '');
+    return baseUrl + arr[1];
+  }
+
   _formatProblemMessage(problem: any) {
+    // Phase 1
     const difficultyEmoji = {
       'Easy': '🟢',
       'Medium': '🟠',
       'Hard': '🔴'
     };
+
+    const formartedLink = this._formatProblemLink(problem.link);
+    console.log(formartedLink, '==> formartedLink...');
     
     // @ts-ignore
     const difficultyText = `${difficultyEmoji[problem.difficulty] || '❓'} ${problem.difficulty}`;
@@ -94,7 +61,7 @@ export class SlackConnector {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": `*<${problem.link}|${problem.title}>* • ${difficultyText}`
+          "text": `*<${formartedLink} | ${problem.title}>* • ${difficultyText}`
         }
       },
       {
@@ -124,12 +91,12 @@ export class SlackConnector {
         }
       });
     }
-    
+
     blocks.push({
       "type": "section",
       "text": {
         "type": "mrkdwn",
-        "text": `👉 <${problem.link}|Solve this problem on LeetCode>`
+        "text": `👉 <${formartedLink} | Solve this problem on LeetCode>`
       }
     });
     

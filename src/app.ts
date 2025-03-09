@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express'
-import { LeetCodeCrawler } from './leetcodeCrawler';
 import configs from './configs/env'
-import { SlackConnector } from './slack';
+import { LeetcodeService } from './service/leetcodeService';
+import { SlackService } from './service/slack';
 
 class App {
   private app: express.Application;
@@ -11,27 +11,25 @@ class App {
   }
 
   async getLeetcode() {
-    const leetcode = new LeetCodeCrawler(configs.LEETCODE_URL, configs.LEETCODE_API_URL);
+    const leetcode = new LeetcodeService();
     const problem = await leetcode.getDailyChallenge();
     if (problem) {
-        console.log(`Successfully fetched problem: ${problem.title}`);
-        const slack = new SlackConnector(configs.SLACK_BOT_TOKEN, configs.SLACK_CHANNEL);
-        const result = await slack.postLeetcodeProblem(problem);
-        console.log(result, '==> result..');
-        if (result) {
-          console.log("Successfully posted to Slack");
-        } else {
-          console.error("Failed to post to Slack");
-        }
+      const slack = new SlackService(configs.SLACK_BOT_TOKEN, configs.SLACK_CHANNEL);
+      const result = await slack.postLeetcodeProblem(problem);
+      // if (result) {
+      //   console.log("Successfully posted to Slack");
+      // } else {
+      //   console.error("Failed to post to Slack");
+      // }
     } else {
       console.error("Failed to fetch LeetCode problem");
     }
   }
-  run() {
-    this.app.use('/', () => {
 
+  run() {
+    this.app.use('/', (req: Request, res: Response) => {
+      res.send('This is my server!')
     })
-   
     this.app.listen(this.PORT, async () => {
       console.log(`App running on port ${this.PORT}: http://localhost:${this.PORT}`);
       await this.getLeetcode();
